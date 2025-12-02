@@ -1,0 +1,117 @@
+"use client"
+
+import { useEffect, useState } from "react"
+import { useAuth } from "@/contexts/auth-context"
+import { getUserStats, resetUserStats, getAllQuizProgress, type UserStats } from "@/lib/firebase-service"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { LogOut, Trophy, TrendingUp, BookOpen, RotateCcw } from "lucide-react"
+
+interface UserStatsPanelProps {
+  refreshTrigger?: number
+  onDataReset?: () => void
+}
+
+export function UserStatsPanel({ refreshTrigger, onDataReset }: UserStatsPanelProps) {
+  const { username, signOut } = useAuth()
+  const [stats, setStats] = useState<UserStats | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [resetting, setResetting] = useState(false)
+  const [hasAnyData, setHasAnyData] = useState(false)
+
+  useEffect(() => {
+    if (username) {
+      loadStats()
+    }
+  }, [username, refreshTrigger])
+
+  const loadStats = async () => {
+    if (!username) return
+
+    try {
+      const [userStats, progressData] = await Promise.all([getUserStats(username), getAllQuizProgress(username)])
+
+      setStats(userStats)
+
+      const hasData = (userStats && userStats.totalQuizzes > 0) || Object.keys(progressData).length > 0
+      setHasAnyData(hasData)
+    } catch (error) {
+      console.error("[v0] Error loading stats:", error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleResetStats = async () => {
+    if (!username) return
+
+    const confirmed = window.confirm(
+      "Weet je zeker dat je al je statistieken wilt resetten? Dit verwijdert alle quiz resultaten en opgeslagen voortgang. Dit kan niet ongedaan worden gemaakt.",
+    )
+
+    if (!confirmed) return
+
+    setResetting(true)
+    try {
+      await resetUserStats(username)
+      await loadStats()
+      if (onDataReset) {
+        onDataReset()
+      }
+    } catch (error) {
+      console.error("[v0] Error resetting stats:", error)
+      alert("Er is een fout opgetreden bij het resetten van je statistieken.")
+    } finally {
+      setResetting(false)
+    }
+  }
+
+  if (!username) return null
+
+  return (
+    <Card className="border-2 mb-6">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-xl">Welkom terug, {username}!</CardTitle>
+          <div className="flex gap-2">
+            {hasAnyData && (
+              <Button variant="outline" size="sm" onClick={handleResetStats} disabled={resetting}>
+                <RotateCcw className="w-4 h-4 mr-2" />
+                {resetting ? "Resetten..." : "Reset Stats"}
+              </Button>
+            )}
+            <Button variant="outline" size="sm" onClick={() => signOut()}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Uitloggen
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        {loading ? (
+          <p className="text-muted-foreground">Statistieken laden...</p>
+        ) : stats ? (
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-center p-4 rounded-lg bg-muted/50">
+              <BookOpen className="w-6 h-6 mx-auto mb-2 text-primary" />
+              <p className="text-2xl font-bold">{stats.totalQuizzes}</p>
+              <p className="text-sm text-muted-foreground">Quiz gemaakt</p>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-muted/50">
+              <TrendingUp className="w-6 h-6 mx-auto mb-2 text-primary" />
+              <p className="text-2xl font-bold">{stats.averageScore}%</p>
+              <p className="text-sm text-muted-foreground">Gemiddeld</p>
+            </div>
+            <div className="text-center p-4 rounded-lg bg-muted/50">
+              <Trophy className="w-6 h-6 mx-auto mb-2 text-primary" />
+              <p className="text-2xl font-bold">{stats.bestScore}%</p>
+              <p className="text-sm text-muted-foreground">Beste score</p>
+            </div>
+          </div>
+        ) : (
+          <p className="text-muted-foreground">Geen statistieken beschikbaar</p>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
