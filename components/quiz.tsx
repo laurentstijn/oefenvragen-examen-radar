@@ -349,7 +349,10 @@ export default function Quiz() {
                 >
                   {option.label}
                 </span>
-                <span className="flex-1 text-base leading-relaxed break-words overflow-wrap-anywhere min-w-0">
+                <span
+                  className="flex-1 text-base leading-relaxed break-words overflow-wrap-anywhere min-w-0 hyphens-auto"
+                  lang="nl"
+                >
                   {option.text}
                 </span>
               </div>
