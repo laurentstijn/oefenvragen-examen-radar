@@ -349,7 +349,9 @@ export default function Quiz() {
                 >
                   {option.label}
                 </span>
-                <span className="flex-1 text-base leading-relaxed break-words">{option.text}</span>
+                <span className="flex-1 text-base leading-relaxed break-words overflow-wrap-anywhere min-w-0">
+                  {option.text}
+                </span>
               </div>
             </button>
           )
