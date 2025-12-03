@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Elektromagnetische Golven Quiz",
-  description: "Test je kennis over elektromagnetische golven en radar",
+  title: "Oefenvragen Examen Radar",
+  description: "Test je theoretische radar kennis",
   generator: "v0.app",
   icons: {
     icon: [
