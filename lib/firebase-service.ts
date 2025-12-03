@@ -50,6 +50,7 @@ export async function createUser(username: string): Promise<void> {
     await set(userRef, {
       username,
       createdAt: Date.now(),
+      incorrectQuestions: {}, // Initialize incorrectQuestions node
     })
     console.log("[v0] User created:", username)
   } catch (error) {
@@ -162,6 +163,9 @@ export async function resetUserStats(username: string): Promise<void> {
     const progressRef = ref(db, `quizProgress/${username}`)
     deletePromises.push(remove(progressRef))
 
+    const userRef = ref(db, `users/${username}/incorrectQuestions`)
+    deletePromises.push(remove(userRef))
+
     await Promise.all(deletePromises)
     console.log("[v0] User stats and progress reset for:", username)
   } catch (error) {
@@ -256,38 +260,60 @@ export async function clearQuizProgress(username: string, setId: string): Promis
 
 export async function getWrongAnswers(username: string): Promise<{ questionId: number; correctAnswer: string }[]> {
   try {
-    const quizResultsRef = ref(db, "quizResults")
-    const userQuery = query(quizResultsRef, orderByChild("username"), equalTo(username))
+    const incorrectIds = await getIncorrectQuestions(username)
 
-    const snapshot = await get(userQuery)
-
-    if (!snapshot.exists()) {
-      return []
-    }
-
-    const wrongAnswers = new Set<number>()
-
-    snapshot.forEach((childSnapshot) => {
-      const data = childSnapshot.val() as QuizResult
-
-      // Check each answer
-      data.answersGiven.forEach((answer, index) => {
-        if (answer !== null && answer !== data.correctAnswers[index]) {
-          // This answer was wrong, get the original question ID
-          // Question IDs are sequential: set1 = 1-50, set2 = 51-100, etc.
-          const setNumber = Number.parseInt(data.setId.replace("set", ""))
-          const questionId = (setNumber - 1) * 50 + index + 1
-          wrongAnswers.add(questionId)
-        }
-      })
-    })
-
-    return Array.from(wrongAnswers).map((id) => ({
+    return incorrectIds.map((id) => ({
       questionId: id,
       correctAnswer: "", // Will be filled from questions data
     }))
   } catch (error) {
     console.error("[v0] Error getting wrong answers:", error)
+    return []
+  }
+}
+
+export async function addIncorrectQuestion(username: string, questionId: number): Promise<void> {
+  try {
+    const incorrectRef = ref(db, `users/${username}/incorrectQuestions/${questionId}`)
+    await set(incorrectRef, {
+      questionId,
+      addedAt: Date.now(),
+    })
+    console.log("[v0] Added incorrect question:", questionId)
+  } catch (error) {
+    console.error("[v0] Error adding incorrect question:", error)
+    throw error
+  }
+}
+
+export async function removeIncorrectQuestion(username: string, questionId: number): Promise<void> {
+  try {
+    const incorrectRef = ref(db, `users/${username}/incorrectQuestions/${questionId}`)
+    await remove(incorrectRef)
+    console.log("[v0] Removed incorrect question:", questionId)
+  } catch (error) {
+    console.error("[v0] Error removing incorrect question:", error)
+    throw error
+  }
+}
+
+export async function getIncorrectQuestions(username: string): Promise<number[]> {
+  try {
+    const incorrectRef = ref(db, `users/${username}/incorrectQuestions`)
+    const snapshot = await get(incorrectRef)
+
+    if (!snapshot.exists()) {
+      return []
+    }
+
+    const incorrectIds: number[] = []
+    snapshot.forEach((childSnapshot) => {
+      incorrectIds.push(childSnapshot.val().questionId)
+    })
+
+    return incorrectIds.sort((a, b) => a - b)
+  } catch (error) {
+    console.error("[v0] Error getting incorrect questions:", error)
     return []
   }
 }

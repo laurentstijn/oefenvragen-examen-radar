@@ -103,7 +103,7 @@ export function UserStatsPanel({ refreshTrigger, onDataReset }: UserStatsPanelPr
             <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
               <BookOpen className="w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-primary" />
               <p className="text-lg sm:text-2xl font-bold">{stats.totalQuizzes}</p>
-              <p className="text-xs sm:text-sm text-muted-foreground">Quiz gemaakt</p>
+              <p className="text-xs sm:text-sm text-muted-foreground">Reeksen gemaakt</p>
             </div>
             <div className="text-center p-2 sm:p-4 rounded-lg bg-muted/50">
               <TrendingUp className="w-4 h-4 sm:w-6 sm:h-6 mx-auto mb-1 sm:mb-2 text-primary" />

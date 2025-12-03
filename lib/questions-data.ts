@@ -31,7 +31,7 @@ const q = (id: number, question: string, a: string, b: string, c: string, correc
   correct,
 })
 
-// CHANGE: Added image parameter to qWithImage helper to support actual image paths
+// Helper for questions with an image in the question
 const qWithImage = (
   id: number,
   question: string,
@@ -46,9 +46,10 @@ const qWithImage = (
   options: { a, b, c },
   correct,
   hasImage: true,
-  image, // Updated to use the 'image' parameter
+  image,
 })
 
+// Helper for questions with image answers
 const qWithImageAnswers = (
   id: number,
   question: string,
@@ -61,9 +62,9 @@ const qWithImageAnswers = (
   id,
   question,
   options: {
-    a: `Optie A`,
-    b: `Optie B`,
-    c: `Optie C`,
+    a: "",
+    b: "",
+    c: "",
   },
   optionImages: {
     a: imageA,
@@ -75,6 +76,7 @@ const qWithImageAnswers = (
   image: questionImage,
 })
 
+// All question sets with correct data from PDF
 export const questionSets: QuestionSet[] = [
   {
     id: "set1",
@@ -815,7 +817,7 @@ export const questionSets: QuestionSet[] = [
         "De versterkingsknop van het radartoestel heeft volgende functie:",
         "hij regelt de lichtsterkte van de echo's op het scherm",
         "hij regelt het zendvermogen",
-        "hij dient om ook de echo's, van kleine voorwerpen die op grote afstand liggen, zichtbaar te maken",
+        "hij regelt het zendvermogen van de zender",
         "c",
       ),
     ],
@@ -839,14 +841,6 @@ export const questionSets: QuestionSet[] = [
         "meervoudige onregelmatige terugkaatsingen tussen meestal op de oever van de vaarweg gelegen grote gebouwen",
         "kleine vaartuigen die ten gevolge van golven niet steeds geraakt worden door de impulsen",
         "hoogspanningskabels",
-        "a",
-      ),
-      q(
-        110,
-        "De echo van een boei is:",
-        "een vierkante stip als deze boei op een grote afstand gelegen is",
-        "steeds een ronde echo",
-        "een dwarsliggend streepje indien de boei op een grote afstand ligt",
         "a",
       ),
       q(
@@ -903,6 +897,14 @@ export const questionSets: QuestionSet[] = [
         "20 knopen",
         "25 knopen",
         "15 knopen",
+        "a",
+      ),
+      q(
+        110,
+        "De echo van een boei is:",
+        "een vierkante stip als deze boei op een grote afstand gelegen is",
+        "steeds een ronde echo",
+        "een dwarsliggend streepje indien de boei op een grote afstand ligt",
         "a",
       ),
       q(
@@ -1199,7 +1201,7 @@ export const questionSets: QuestionSet[] = [
         'Bij het gebruik van de "Tune" knop letten we er steeds op dat:',
         "de tune of afstemmingsindicator zoveel mogelijk naar rechts is gedraaid",
         "zoveel mogelijk centraal staat",
-        "de indicator zoveell mogelijk uitwijking vertoont",
+        "de indicator zoveel mogelijk uitwijking vertoont",
         "c",
       ),
       q(
@@ -1212,10 +1214,10 @@ export const questionSets: QuestionSet[] = [
       ),
       q(
         150,
-        "Is het mogelijk om de vaste ringen uit te schakelen?",
-        "Ja",
-        "Neen",
-        "Slechts onder bepaalde voorwaarden",
+        "Is het mogelijk de vaste ringen uit te schakelen?",
+        'Ja, met de "Ring" knop',
+        "Nee, dit is niet mogelijk",
+        'Ja, met de "Range" knop',
         "a",
       ),
     ],
@@ -1239,7 +1241,7 @@ export const questionSets: QuestionSet[] = [
         "het toestel staat op OFF",
         "het toestel staat op ON",
         "het toestel staat op STAND – BY",
-        "b",
+        "a",
         "/images/vraag-152.png",
       ),
       qWithImage(
@@ -1248,7 +1250,7 @@ export const questionSets: QuestionSet[] = [
         "het toestel staat op OFF",
         "het toestel staat op ON",
         "het toestel staat op STAND – BY",
-        "c",
+        "b",
         "/images/vraag-153.png",
       ),
       qWithImage(
@@ -1257,7 +1259,7 @@ export const questionSets: QuestionSet[] = [
         "het toestel staat op OFF",
         "het toestel staat op ON",
         "het toestel staat op STAND – BY",
-        "b",
+        "c",
         "/images/vraag-154.png",
       ),
       q(
@@ -1289,7 +1291,7 @@ export const questionSets: QuestionSet[] = [
       qWithImage(160, "Dit symbool staat voor:", "brilliance", "range", "panel", "c", "/images/vraag-160.png"),
       q(
         161,
-        "Het doel van de brilliance is?",
+        "Het doel van de brilliance is",
         "op oudere toestellen de helderheid van het videobeeld, op rasterscan de instelling van het raster",
         "op oudere toestellen het rooster negatief maken, op rasterscan de helderheid van het videobeeld",
         'op rasterscan toestellen het negatief maken van het rooster, hierdoor komt het toestel in een "lektoestand"',
@@ -1297,7 +1299,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         162,
-        "Met deze knop stel je?",
+        "Met deze knop stel je",
         "de zender af op de ontvanger",
         "de lengte van de impuls in",
         "de ontvanger af op de zender",
@@ -1306,7 +1308,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         163,
-        "Met deze knop stel je?",
+        "Met deze knop stel je",
         "de zender af op de ontvanger",
         "de lengte van de impuls in",
         "de ontvanger af op de zender",
@@ -1331,7 +1333,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         166,
-        "Met deze knop regelt men?",
+        "Met deze knop regelt men",
         "de onderdrukking van regen",
         "de versterking van de echo's",
         "de onderdrukking van golven",
@@ -1340,7 +1342,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         167,
-        "Met deze knop regelt men?",
+        "Met deze knop regelt men",
         "de onderdrukking van regen",
         "de versterking van de echo's",
         "de onderdrukking van golven",
@@ -1349,7 +1351,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         168,
-        "Met deze knop regelt men?",
+        "Met deze knop regelt men",
         "de onderdrukking van regen",
         "de versterking van de echo's",
         "de onderdrukking van golven",
@@ -1368,13 +1370,13 @@ export const questionSets: QuestionSet[] = [
         170,
         "Bij het wijzigen van de RANGE",
         "wordt de tijdbasis van de zaagtandgenerator, de repetentie, de pulslengte en vaste ringen gewijzigd",
-        "wordt de variabele ring, de elektronische peilinglijn, de repetentie en de vaste ringen gewijzigd",
+        "wordt de variabele ring, de elektronische peilingslijn, de repetentie en de vaste ringen gewijzigd",
         "wordt de tijdbasis van zaagtandgenerator, de helderheid en de versterking van het beeld gewijzigd",
         "a",
       ),
       qWithImage(
         171,
-        "Als dit symbool zichtbaar is?",
+        "Als dit symbool zichtbaar is",
         "staat het toestel in True-motion presentatie",
         "staat het toestel in North-up presentatie",
         "staat het toestel in Ship's head-up presentatie",
@@ -1383,7 +1385,7 @@ export const questionSets: QuestionSet[] = [
       ),
       qWithImage(
         172,
-        "Als dit symbool zichtbaar is?",
+        "Als dit symbool zichtbaar is",
         "staat het toestel in True-motion presentatie",
         "staat het toestel in North-up presentatie",
         "staat het toestel in Ship's head-up presentatie",
@@ -1521,41 +1523,41 @@ export const questionSets: QuestionSet[] = [
       qWithImageAnswers(
         189,
         "Om het beeld te centreren / decentreren maakt men gebruik van volgende knop:",
-        "/images/antwoord A-189 en 190.png",
-        "/images/antwoord B-189 en 190.png",
-        "/images/antwoord C-189 en 190.png",
-        "a",
+        "/images/antwoord%20A-189%20en%20190.png",
+        "/images/antwoord%20B-189%20en%20190.png",
+        "/images/antwoord%20C-189%20en%20190.png",
+        "c",
       ),
       qWithImageAnswers(
         190,
         "Om de koersflits te onderdrukken maakt men gebruik van volgende knop:",
-        "/images/antwoord A-189 en 190.png",
-        "/images/antwoord B-189 en 190.png",
-        "/images/antwoord C-189 en 190.png",
+        "/images/antwoord%20A-189%20en%20190.png",
+        "/images/antwoord%20B-189%20en%20190.png",
+        "/images/antwoord%20C-189%20en%20190.png",
         "b",
       ),
       qWithImageAnswers(
         191,
         "Interference rejector wordt vaak als volg afgebeeld",
-        "/images/antwoord A-191 en 192 en 193.png",
-        "/images/antwoord B-191 en 192 en 193.png",
-        "/images/antwoord C-191 en 192 en 193.png",
+        "/images/antwoord%20A-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20B-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20C-191%20en%20192%20en%20193.png",
         "a",
       ),
       qWithImageAnswers(
         192,
         "Electronic bearing line wordt vaak als volg afgebeeld",
-        "/images/antwoord A-191 en 192 en 193.png",
-        "/images/antwoord B-191 en 192 en 193.png",
-        "/images/antwoord C-191 en 192 en 193.png",
+        "/images/antwoord%20A-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20B-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20C-191%20en%20192%20en%20193.png",
         "c",
       ),
       qWithImageAnswers(
         193,
         "Variable range marker wordt vaak als volg afgebeeld",
-        "/images/antwoord A-191 en 192 en 193.png",
-        "/images/antwoord B-191 en 192 en 193.png",
-        "/images/antwoord C-191 en 192 en 193.png",
+        "/images/antwoord%20A-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20B-191%20en%20192%20en%20193.png",
+        "/images/antwoord%20C-191%20en%20192%20en%20193.png",
         "b",
       ),
       q(
@@ -1606,6 +1608,14 @@ export const questionSets: QuestionSet[] = [
         "het aantal golven opgewekt per seconde, het wordt uitgedrukt in Hz",
         "b",
       ),
+      q(
+        200,
+        'De radar aan boord van de "THEMIS II" heeft een frequentie van 9.410 MHz. Hoeveel bedraagt de golflengte?',
+        "3,18 cm",
+        "2,75 cm",
+        "3,00 cm",
+        "a",
+      ),
     ],
   },
   {
@@ -1613,17 +1623,9 @@ export const questionSets: QuestionSet[] = [
     name: "Reeks 5",
     description: "",
     questions: [
+      q(201, 'De radar aan boord van de "THEMIS II" zend uit in de', "S-band", "X-band", "X- en S-band", "b"),
       q(
-        201,
-        'De radar aan boord van de "THEMIS II" heeft een frequentie van 9 735 MHz',
-        "de golflengte is groter dan 3 cm",
-        "de golflengte is kleiner dan 3 cm",
-        "de golflengte is gelijk aan 3 cm",
-        "a",
-      ),
-      q(202, 'De radar aan boord van de "THEMIS II" zend uit in de:', "S-band", "X-band", "X- en S-band", "b"),
-      q(
-        203,
+        202,
         "Radar is een engelse afkorting en staat voor:",
         "Radio detection and ranging",
         "Rasterscan data recognition",
@@ -1631,25 +1633,25 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        204,
+        203,
         "De voortplantingssnelheid van de elektromagnetische golven bedraagt:",
         "300.000 m/s",
         "300.000.000 km/s",
         "300.000 km/s",
         "c",
       ),
-      q(205, "Het aantal golven opgewekt per seconden noemen we:", "golflengte", "frequentie", "amplitude", "b"),
+      q(204, "Het aantal golven opgewekt per seconden noemen we:", "golflengte", "frequentie", "amplitude", "b"),
       q(
-        206,
+        205,
         "Een Hz (Hertz) is gelijk aan:",
         "10.000 golven per seconden",
         "1.000 golven per seconden",
         "1 golf per seconden",
         "c",
       ),
-      q(207, "Frequentie X golflengte =", "amplitude", "voortplantingssnelheid", "golfperiode", "b"),
+      q(206, "Frequentie X golflengte =", "amplitude", "voortplantingssnelheid", "golfperiode", "b"),
       q(
-        208,
+        207,
         "De frequentie van een radar bedraagt 9.410 MHz. Hoeveel bedraagt de golflengte?",
         "3,18 cm",
         "2,75 cm",
@@ -1657,7 +1659,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        209,
+        208,
         "De afstand tussen de plaats van uitzending en een waargenomen voorwerp, kan vastgesteld worden door:",
         "de afstand tussen het voorwerp te meten en delen door twee",
         "de tijd te meten tussen zendimpuls en delen door twee",
@@ -1665,7 +1667,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        210,
+        209,
         "De tijd tussen uitzenden en ontvangen van de elektromagnetische golf bedraagt 60 μs. Hoeveel bedraagt de afstand?",
         "18.000 m.",
         "9.000 m.",
@@ -1673,17 +1675,17 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        211,
+        210,
         "Een binnenvaart radar erkend door de Rijnvaart inspectie zendt uit in de:",
         "S band",
         "Q band",
         "X band",
         "c",
       ),
-      q(212, "Een seconde is gelijk aan:", "100.000 μs", "1.000.000 μs", "1.000 μs", "b"),
-      q(213, "Een Mega Hertz (MHz) is gelijk aan:", "1.000.000 Hz", "100.000 Hz", "1.000 Hz", "a"),
+      q(211, "Een seconde is gelijk aan:", "100.000 μs", "1.000.000 μs", "1.000 μs", "b"),
+      q(212, "Een Mega Hertz (MHz) is gelijk aan:", "1.000.000 Hz", "100.000 Hz", "1.000 Hz", "a"),
       q(
-        214,
+        213,
         "De hoofdtrillingskring:",
         "Zorgt dat de hoge spanningen omgezet worden in radargolven",
         "Is de klok van de radar en geeft op regelmatige tijdstippen spanningstoten",
@@ -1691,7 +1693,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        215,
+        214,
         "De magnetron:",
         "Zorgt dat de hoge spanningen omgezet worden in radargolven",
         "Is de klok van de radar en geeft op regelmatige tijdstippen spanningstoten",
@@ -1699,7 +1701,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        216,
+        215,
         "De modulator:",
         "Zorgt dat de hoge spanningen omgezet worden in radargolven",
         "Is de klok van de radar en geeft op regelmatige tijdstippen spanningstoten",
@@ -1707,7 +1709,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        217,
+        216,
         "Het zendgedeelte van een radar bestaat uit volgende onderdelen:",
         "De magnetron, de elektronische schakelaar, de zaagtandstroom generator en de antenne",
         "De antenne, de versterker, de magnetron, de elektronische schakelaar.",
@@ -1715,7 +1717,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        218,
+        217,
         "De elektronische schakelaar:",
         "Sluit het ontvangst gedeelte af, gedurende de ganse zendtijd",
         "Sluit het ontvangst gedeelte niet af, gedurende de ganse zendtijd",
@@ -1723,7 +1725,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        219,
+        218,
         "Het afstandsonderscheidingsvermogen van een radar is gelijk aan:",
         "Tweemaal de impulslengte",
         "De helft van de impulslengte",
@@ -1731,7 +1733,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        220,
+        219,
         "De horizontale bundelbreedte van een binnenvaart radar bedraagt:",
         "Meer dan 2°",
         "Maximaal 1,2°",
@@ -1739,7 +1741,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        221,
+        220,
         "Het horizontaal onderscheidingsvermogen is het best bij een bundelbreedte van:",
         "Minder of gelijk aan 1°",
         "Meer dan 2°",
@@ -1747,7 +1749,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        222,
+        221,
         "De verticale bundelbreedte van een binnenvaartradar bedraagt:",
         "Maximaal 1,2°",
         "Tussen de 20° à 25°",
@@ -1755,7 +1757,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        223,
+        222,
         "De repetentie van het toestel wordt bepaald door:",
         "De modulator",
         "De golflengte",
@@ -1763,7 +1765,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        224,
+        223,
         "Het ontvangstgedeelte van de radar bestaat uit:",
         "De zaagtandstroomgenerator, de antenne, de modulator, de elektronische schakelaar en de beeldbuis",
         "De beeldbuis, de antenne, de elektronische schakelaar, de zaagtandstroomgenerator, de versterker en de Gunn oscillator",
@@ -1771,7 +1773,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        225,
+        224,
         "Met een radar kan men:",
         "Het soort en uitzicht kennen van omringende voorwerpen",
         "De peiling en afstand kennen van omringende voorwerpen",
@@ -1779,7 +1781,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        226,
+        225,
         "De impulslengte wordt vergroot:",
         "Door de zendtijd in te korten",
         "Door de zendtijd te verlengen",
@@ -1787,7 +1789,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        227,
+        226,
         "Als aan de tuning gedraaid wordt dan stellen we:",
         "De zender en de ontvanger af",
         "De zender af op de ontvanger",
@@ -1795,7 +1797,40 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        228,
+        227,
+        "Als men van short pulse overschakelt naar long pulse moeten voorwerpen in radiale richting om apart op het scherm te komen:",
+        "Verder van elkaar liggen",
+        "Korter bij elkaar liggen",
+        "Op dezelfde afstand van elkaar liggen.",
+        "a",
+      ),
+      q(228, "De middenfrequentie wordt afgestemd door:", "De gain", "De tuning", "De gain en de tuning", "b"),
+      q(
+        229,
+        "Binnenkomende echo's worden:",
+        "Rechtstreeks versterkt",
+        "De middenfrequentie wordt versterkt",
+        "Ze worden allebei versterkt",
+        "b",
+      ),
+      q(
+        230,
+        "Op een binnenvaart radar is de middenfrequentie:",
+        "Gelijk aan 10.000 MHz",
+        "Tussen de 30 en 10.000 MHz",
+        "Gelijk aan 30 MHz",
+        "c",
+      ),
+      q(
+        231,
+        "Om versterkt te worden:",
+        "Moet de middenfrequentie juist afgestemd zijn",
+        "Heeft het geen belang of de middenfrequentie afgestemd is",
+        "Kan men de middenfrequentie afstemmen",
+        "a",
+      ),
+      q(
+        232,
         "Om een voorwerp op de juiste afstand in beeld te brengen maakt de radar gebruik van:",
         "Een computer programma",
         "De zaagtandstroomgenerator",
@@ -1803,7 +1838,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        229,
+        233,
         "Het bereik van de radar wordt bepaald door:",
         "De hoogte van de antenne, het geobserveerde voorwerp, het schaalbereik en de atmosferische omstandigheden,",
         "De hoogte van de antenne, het geobserveerde voorwerp, het piekvermogen van de zender en de atmosferische omstandigheden",
@@ -1811,7 +1846,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        230,
+        234,
         "Hoe hoger de antenne geplaatst is:",
         "Hoe kleiner het bereik",
         "Verandert niets aan het bereik",
@@ -1819,7 +1854,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        231,
+        235,
         "Als men het schaalbereik wijzigt, wijzigt men ook:",
         "Het computerprogramma",
         "Het computerprogramma en de tijdbasis van de zaagtandstroomgenerator",
@@ -1827,7 +1862,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        232,
+        236,
         "Om de binnenkomende echo's te versterken gaat men de gain knop:",
         "In wijzerzin draaien",
         "In tegen wijzerzin draaien",
@@ -1835,7 +1870,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        233,
+        237,
         "De knoppen rain-clutter en sea-clutter gebruikt men om te:",
         "Onderdrukken",
         "Versterken",
@@ -1843,7 +1878,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        234,
+        238,
         "Om een goede echo te verkrijgen moet het voorwerp:",
         "Goed geleidend zijn, grote rechte vlakken bezitten, een aspect van 80° en een bepaalde oppervlakteruwheid hebben.",
         "Goed geleidend zijn, grote rechte vlakken bezitten, een aspect van 90° en een bepaalde oppervlakteruwheid hebben.",
@@ -1851,7 +1886,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        235,
+        239,
         "Bij regen gaat men:",
         "De rain-clutter in tegen wijzerzin draaien om een beetje te onderdrukken",
         "De rain-clutter in wijzerzin draaien om een beetje te onderdrukken",
@@ -1859,7 +1894,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        236,
+        240,
         "De weerkaatsing op een kaaimuur geeft een goed ontvangen echo als:",
         "Het aspect groter is dan 90°",
         "Het aspect kleiner is dan 90°",
@@ -1867,7 +1902,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        237,
+        241,
         "De blinde afstand van een radar is:",
         "Groter dan de helft van de impulslengte",
         "Kleiner dan de helft van de impulslengte",
@@ -1875,7 +1910,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        238,
+        242,
         "De Azimutale vergroting is:",
         "Groter dan de horizontale bundelhoek",
         "Kleiner dan de horizontale bundelhoek",
@@ -1883,7 +1918,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        239,
+        243,
         "Bij windkracht 5 Bft. is de windrichting op het radarscherm:",
         "Te bepalen",
         "Niet te bepalen",
@@ -1891,7 +1926,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        240,
+        244,
         "Op de peilers van een brug staan radarreflectoren geplaatst op een afstand van 12,5 meters,",
         "De echo van deze reflectoren komen afgescheiden van de brug, op het scherm",
         "De echo van deze reflectoren komen niet afgescheiden van de brug, op het scherm",
@@ -1899,7 +1934,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        241,
+        245,
         "Een valse echo",
         "Verdwijnt even snel als hij is opgekomen",
         "Blijft steeds in beeld",
@@ -1907,15 +1942,14 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        242,
-        'Onder het begrip "relatieve koers" wordt verstaan: de richting en zin waarin de echo\'s van andere voorwerpen zich over het scherm verplaatsen.',
-        "Hierdoor is de ware koers en snelheid van deze voorwerpen te bepalen",
+        246,
+        'Onder het begrip "relatieve koers" wordt verstaan: de richting en zin waarin de echo\'s van andere voorwerpen zich over het scherm verplaatsen. Hierdoor is de ware koers en snelheid van deze voorwerpen te bepalen',
         "Hierdoor is de ware koers en snelheid van deze voorwerpen niet te bepalen",
         "Hierdoor is de ware koers en snelheid van deze voorwerpen misschien te bepalen",
         "b",
       ),
       q(
-        243,
+        247,
         "De relatieve koers wordt beïnvloedt door:",
         "De ware koers en vaart van het eigen schip",
         "De ware koers en vaart van het andere schip",
@@ -1923,7 +1957,7 @@ export const questionSets: QuestionSet[] = [
         "c",
       ),
       q(
-        244,
+        248,
         "De bochtaanwijzer geeft de volgende informatie:",
         "De hoeksnelheid en de draaizin van de beweging van het schip",
         "De hoeksnelheid van de beweging van het schip",
@@ -1931,7 +1965,7 @@ export const questionSets: QuestionSet[] = [
         "a",
       ),
       q(
-        245,
+        249,
         "De hoeksnelheid wordt uitgedrukt:",
         "In graden per seconde",
         "In graden per minuut",
@@ -1939,7 +1973,7 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        246,
+        250,
         "Bij gelijke vaart:",
         "Hoe kleiner de hoeksnelheid, hoe scherper de bocht",
         "Hoe groter de hoeksnelheid, hoe scherper de bocht",
@@ -1947,53 +1981,18 @@ export const questionSets: QuestionSet[] = [
         "b",
       ),
       q(
-        247,
+        251,
         "Bij gelijke hoeksnelheid:",
         "Hoe groter de snelheid van het schip, hoe scherper de bocht",
         "Hoe groter de snelheid van het schip, hoe ruimer de bocht",
         "Hoe kleiner de snelheid van het schip, hoe ruimer de bocht",
         "b",
       ),
-      q(
-        248,
-        "De echo van een boei is:",
-        "een vierkante stip",
-        "altijd een ronde echo",
-        "een dwarsliggend streepje",
-        "a",
-      ),
-      q(
-        249,
-        "Waar worden reflectoren het best waargenomen?",
-        "Op de peiling lijn van de radar",
-        "Op de peiling lijn loodrecht op de radar",
-        "Op de peiling lijn diagonaal op de radar",
-        "a",
-      ),
-      q(
-        250,
-        "Varend met een normale snelheid, de afstand tot de kade bedraagt 3 mijl. Welk schaalbereik stel je in?",
-        "1,5 mijl",
-        "3 mijl",
-        "6 mijl",
-        "b",
-      ),
-      q(251, "Hoeveel bedraagt de golflengte bij een frequentie van 10 GHz?", "3 cm", "1 cm", "10 cm", "a"),
     ],
   },
 ]
 
-export function getAllQuestions(): Question[] {
-  const allQuestions: Question[] = []
-  questionSets.forEach((set) => {
-    set.questions.forEach((q) => {
-      allQuestions.push(q)
-    })
-  })
-  return allQuestions
-}
-
-export function getQuestionsByIds(questionIds: number[]): Question[] {
-  const allQuestions = getAllQuestions()
-  return questionIds.map((id) => allQuestions.find((q) => q.id === id)).filter((q): q is Question => q !== undefined)
+export function getQuestionsByIds(ids: number[]): Question[] {
+  const allQuestions = questionSets.flatMap((set) => set.questions)
+  return ids.map((id) => allQuestions.find((q) => q.id === id)).filter((q): q is Question => q !== undefined)
 }

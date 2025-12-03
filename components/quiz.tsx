@@ -6,31 +6,19 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { CheckCircle2, XCircle, RotateCcw, Shuffle, ChevronLeft, AlertCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Checkbox } from "@/components/ui/checkbox"
-import { questionSets, type Question, type QuestionSet, getQuestionsByIds } from "@/lib/questions-data"
+import { questionSets, type Question, type QuestionSet } from "@/lib/questions-data"
 import {
   saveQuizResult,
   getSeriesAttempts,
   saveQuizProgress,
-  getAllQuizProgress,
   clearQuizProgress,
-  getWrongAnswers,
+  getAllQuizProgress,
+  addIncorrectQuestion,
+  removeIncorrectQuestion,
+  getIncorrectQuestions,
+  type QuizProgress,
 } from "@/lib/firebase-service"
-import { useAuth } from "@/contexts/auth-context"
-
-type QuizQuestion = Question & {
-  options: { label: string; text: string }[]
-  correctAnswerText?: string
-}
-
-type QuizProgress = {
-  setId: string
-  setName: string
-  currentQuestion: number
-  answers: (string | null)[]
-  shuffleQuestions: boolean
-  shuffleAnswers: boolean
-  timestamp: number
-}
+import { useAuth } from "@/contexts/auth-context" // Import useAuth hook
 
 interface QuizProps {
   onQuizComplete?: () => void
@@ -49,7 +37,7 @@ function shuffleArray<T>(array: T[]): T[] {
   return newArray
 }
 
-function convertQuestions(questions: Question[]): QuizQuestion[] {
+function convertQuestions(questions: Question[]): any[] {
   return questions
     .filter((q) => q && q.options && q.options.a && q.options.b && q.options.c)
     .map((q) => ({
@@ -65,7 +53,7 @@ function convertQuestions(questions: Question[]): QuizQuestion[] {
     }))
 }
 
-function shuffleAnswers(questions: QuizQuestion[]): QuizQuestion[] {
+function shuffleAnswers(questions: any[]): any[] {
   return questions.map((q) => {
     if (!q.options || !Array.isArray(q.options)) {
       console.error("[v0] Question missing options array:", q)
@@ -92,15 +80,19 @@ function shuffleAnswers(questions: QuizQuestion[]): QuizQuestion[] {
   })
 }
 
+function getQuestionsByIds(questionIds: string[]): Question[] {
+  return questionSets.flatMap((set) => set.questions.filter((q) => questionIds.includes(q.id)))
+}
+
 export default function Quiz({ onQuizComplete }: QuizProps) {
-  const { username, isAnonymous } = useAuth()
+  const { username, isAnonymous } = useAuth() // Use the imported useAuth hook
 
   const [selectedSet, setSelectedSet] = useState<QuestionSet | null>(null)
   const [isWrongAnswersMode, setIsWrongAnswersMode] = useState(false)
-  const [wrongAnswersQuestions, setWrongAnswersQuestions] = useState<Question[]>([])
+  const [wrongAnswersCount, setWrongAnswersCount] = useState(0)
   const [isShuffleQuestions, setIsShuffleQuestions] = useState(false)
   const [isShuffleAnswers, setIsShuffleAnswers] = useState(false)
-  const [questions, setQuestions] = useState<QuizQuestion[]>([])
+  const [questions, setQuestions] = useState<any[]>([])
   const [quizStarted, setQuizStarted] = useState(false)
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
@@ -165,11 +157,10 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
 
   const loadWrongAnswers = async () => {
     if (!username || isAnonymous) return
+
     try {
-      const wrongAnswers = await getWrongAnswers(username)
-      const questionIds = wrongAnswers.map((wa) => wa.questionId)
-      const questions = getQuestionsByIds(questionIds)
-      setWrongAnswersQuestions(questions)
+      const incorrectIds = await getIncorrectQuestions(username)
+      setWrongAnswersCount(incorrectIds.length)
     } catch (error) {
       console.error("[v0] Error loading wrong answers:", error)
     }
@@ -203,15 +194,44 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
     }
   }, [username, isAnonymous])
 
-  const handleSelectSet = (set: QuestionSet | null, wrongAnswersMode = false) => {
+  const handleSelectSet = async (set: QuestionSet | null, wrongAnswersMode = false) => {
     if (wrongAnswersMode) {
       setIsWrongAnswersMode(true)
-      setSelectedSet({
-        id: "wrong-answers",
-        name: "Al mijn fouten",
-        description: "Oefen alle vragen die je fout hebt gehad",
-        questions: wrongAnswersQuestions,
-      })
+
+      if (!username || isAnonymous) {
+        setSelectedSet({
+          id: "wrong-answers",
+          name: "Al mijn fouten",
+          description: "Oefen alle vragen die je fout hebt gehad",
+          questions: [],
+        })
+        return
+      }
+
+      try {
+        // Load incorrect question IDs
+        const incorrectIds = await getIncorrectQuestions(username)
+        console.log("[v0] Loaded incorrect question IDs:", incorrectIds)
+
+        // Get the actual questions using those IDs
+        const incorrectQuestions = getQuestionsByIds(incorrectIds)
+        console.log("[v0] Loaded incorrect questions:", incorrectQuestions.length)
+
+        setSelectedSet({
+          id: "wrong-answers",
+          name: "Al mijn fouten",
+          description: "Oefen alle vragen die je fout hebt gehad",
+          questions: incorrectQuestions,
+        })
+      } catch (error) {
+        console.error("[v0] Error loading incorrect questions:", error)
+        setSelectedSet({
+          id: "wrong-answers",
+          name: "Al mijn fouten",
+          description: "Oefen alle vragen die je fout hebt gehad",
+          questions: [],
+        })
+      }
     } else if (set) {
       setIsWrongAnswersMode(false)
       const progress = seriesProgress[set.id]
@@ -237,7 +257,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
     setAnswers([])
   }
 
-  const shuffleQuestionsIfNeeded = (questions: Question[]): QuizQuestion[] => {
+  const shuffleQuestionsIfNeeded = (questions: any[]): any[] => {
     let processedQuestions = convertQuestions(questions)
 
     if (isShuffleQuestions) {
@@ -273,6 +293,31 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
     newAnswers[currentQuestion] = selectedAnswer
     setAnswers(newAnswers)
 
+    if (username && !isAnonymous) {
+      const isCorrect = selectedAnswer === questions[currentQuestion].correctAnswer
+      const questionId = questions[currentQuestion].id
+
+      console.log("[v0] Question answered:", { questionId, isCorrect, isWrongAnswersMode })
+
+      if (isWrongAnswersMode) {
+        // In wrong answers mode: remove if correct
+        if (isCorrect) {
+          console.log("[v0] Removing correct answer from incorrect questions:", questionId)
+          removeIncorrectQuestion(username, questionId).catch(console.error)
+        }
+      } else {
+        // In normal mode: add if incorrect
+        if (!isCorrect) {
+          console.log("[v0] Adding incorrect question:", questionId)
+          addIncorrectQuestion(username, questionId).catch(console.error)
+        } else {
+          // If answered correctly in normal mode, also remove from incorrect list
+          console.log("[v0] Removing correct answer from incorrect questions:", questionId)
+          removeIncorrectQuestion(username, questionId).catch(console.error)
+        }
+      }
+    }
+
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1)
       setSelectedAnswer(null)
@@ -302,7 +347,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   const handleContinueToNextSet = () => {
     if (isWrongAnswersMode) return
 
-    const currentSetIndex = questionSets.findIndex((set) => set.id === completedSetId)
+    const currentSetIndex = questionSets.findIndex((set: QuestionSet) => set.id === completedSetId)
     if (currentSetIndex < questionSets.length - 1) {
       const nextSet = questionSets[currentSetIndex + 1]
       handleSelectSet(nextSet)
@@ -329,7 +374,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
         totalQuestions: questions.length,
         percentage,
         answersGiven: finalAnswers,
-        correctAnswers: questions.map((q) => q.correctAnswer),
+        correctAnswers: questions.map((q: any) => q.correctAnswer),
         timestamp: Date.now(),
         shuffleQuestions: isShuffleQuestions,
         shuffleAnswers: isShuffleAnswers,
@@ -346,8 +391,12 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   const handleStopQuiz = async () => {
-    if (username && !isAnonymous && !isWrongAnswersMode) {
-      await saveProgress()
+    if (username && !isAnonymous) {
+      if (!isWrongAnswersMode) {
+        await saveProgress()
+      }
+      // Reload wrong answers after stopping to reflect any changes made
+      await loadWrongAnswers()
       await loadAllSeriesProgress()
     }
     setQuizStarted(false)
@@ -402,7 +451,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
           <CardTitle className="text-lg sm:text-xl lg:text-2xl mb-2">Kies een vragenreeks</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2 sm:space-y-3">
-          {!isAnonymous && username && wrongAnswersQuestions.length > 0 && (
+          {!isAnonymous && username && wrongAnswersCount > 0 && (
             <button
               onClick={() => handleSelectSet(null, true)}
               className="w-full text-left p-4 rounded-lg border-2 border-orange-500/50 bg-orange-500/5 transition-all duration-200 hover:border-orange-500 hover:bg-orange-500/10"
@@ -417,14 +466,12 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
                     Oefen alle vragen die je fout hebt gehad
                   </p>
                 </div>
-                <div className="text-sm sm:text-base font-medium text-orange-500">
-                  {wrongAnswersQuestions.length} vragen
-                </div>
+                <div className="text-sm sm:text-base font-medium text-orange-500">{wrongAnswersCount} vragen</div>
               </div>
             </button>
           )}
 
-          {questionSets.map((set) => {
+          {questionSets.map((set: QuestionSet) => {
             const attemptCount = seriesAttempts[set.id] || 0
             const progressInfo = seriesProgress[set.id]
 
@@ -461,7 +508,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   const selectedSetId = selectedSet?.id
-  const selectedSetDetails = questionSets.find((set) => set.id === selectedSetId) || questionSets[0]
+  const selectedSetDetails = questionSets.find((set: QuestionSet) => set.id === selectedSetId) || questionSets[0]
 
   if (!quizStarted) {
     return (
@@ -520,7 +567,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
     const score = answers.filter((answer, idx) => answer === questions[idx].correctAnswer).length
     const percentage = Math.round((score / questions.length) * 100)
     const hasNextSet = selectedSet
-      ? questionSets.findIndex((set) => set.id === selectedSet.id) < questionSets.length - 1
+      ? questionSets.findIndex((set: QuestionSet) => set.id === selectedSet.id) < questionSets.length - 1
       : false
 
     return (
@@ -547,10 +594,10 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
 
           <div className="space-y-2 sm:space-y-3">
             <h3 className="font-semibold text-base sm:text-lg mb-3">Overzicht antwoorden:</h3>
-            {questions.map((q, idx) => {
+            {questions.map((q: any, idx: number) => {
               const userAnswer = answers[idx]
               const isCorrectAnswer = userAnswer === q.correctAnswer
-              const correctAnswerText = q.options.find((opt) => opt.label === q.correctAnswer)?.text
+              const correctAnswerText = q.options.find((opt: any) => opt.label === q.correctAnswer)?.text
 
               return (
                 <div
@@ -580,7 +627,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
                         <div>
                           <span className="font-medium">Jouw antwoord:</span>
                           <p className="text-muted-foreground">
-                            {userAnswer}) {q.options.find((opt) => opt.label === userAnswer)?.text}
+                            {userAnswer}) {q.options.find((opt: any) => opt.label === userAnswer)?.text}
                           </p>
                         </div>
                       </div>
@@ -599,7 +646,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
                     <div className="ml-8 sm:ml-10 text-sm sm:text-base">
                       <span className="font-medium text-success">Correct!</span>
                       <p className="text-muted-foreground">
-                        {userAnswer}) {q.options.find((opt) => opt.label === userAnswer)?.text}
+                        {userAnswer}) {q.options.find((opt: any) => opt.label === userAnswer)?.text}
                       </p>
                     </div>
                   )}
@@ -664,7 +711,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
         )}
       </CardHeader>
       <CardContent className="space-y-2 sm:space-y-3">
-        {questions[currentQuestion].options.map((option) => {
+        {questions[currentQuestion].options.map((option: any) => {
           const isSelected = selectedAnswer === option.label
           const hasImageAnswer = questions[currentQuestion].optionImages?.[option.label as "a" | "b" | "c"]
 
