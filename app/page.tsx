@@ -22,7 +22,7 @@ export default function Page() {
   }
 
   return (
-    <main className="min-h-screen bg-background py-8 px-4 relative overflow-hidden">
+    <main className="min-h-screen bg-background py-4 sm:py-6 md:py-8 px-2 sm:px-4 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none opacity-[1]">
         <div className="absolute top-[60%] left-[40%] -translate-x-1/2 -translate-y-1/2">
           <div className="w-[800px] h-[800px] rounded-full border-2 border-lime-400/60"></div>
@@ -49,8 +49,8 @@ export default function Page() {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-foreground mb-2">Oefenvragen Examen Radar</h1>
+        <div className="text-center mb-4 sm:mb-6 md:mb-8">
+          <h1 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Oefenvragen Examen Radar</h1>
         </div>
 
         {loading ? (

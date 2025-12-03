@@ -611,7 +611,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   return (
-    <Card className="border-2">
+    <Card className="border-2 max-w-2xl mx-auto mt-4 sm:mt-6 md:mt-8">
       <CardHeader>
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium text-muted-foreground">
