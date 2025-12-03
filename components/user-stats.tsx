@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/auth-context"
-import { getUserStats, resetUserStats, getAllQuizProgress, type UserStats } from "@/lib/firebase-service"
+import { getUserStats, resetUserStats, type UserStats } from "@/lib/firebase-service"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { LogOut, Trophy, TrendingUp, BookOpen, RotateCcw } from "lucide-react"
@@ -17,7 +17,6 @@ export function UserStatsPanel({ refreshTrigger, onDataReset }: UserStatsPanelPr
   const [stats, setStats] = useState<UserStats | null>(null)
   const [loading, setLoading] = useState(true)
   const [resetting, setResetting] = useState(false)
-  const [hasAnyData, setHasAnyData] = useState(false)
 
   useEffect(() => {
     if (username) {
@@ -29,12 +28,8 @@ export function UserStatsPanel({ refreshTrigger, onDataReset }: UserStatsPanelPr
     if (!username) return
 
     try {
-      const [userStats, progressData] = await Promise.all([getUserStats(username), getAllQuizProgress(username)])
-
+      const userStats = await getUserStats(username)
       setStats(userStats)
-
-      const hasData = (userStats && userStats.totalQuizzes > 0) || Object.keys(progressData).length > 0
-      setHasAnyData(hasData)
     } catch (error) {
       console.error("[v0] Error loading stats:", error)
     } finally {
@@ -74,19 +69,17 @@ export function UserStatsPanel({ refreshTrigger, onDataReset }: UserStatsPanelPr
         <div className="flex items-center justify-between gap-2">
           <CardTitle className="text-base sm:text-lg lg:text-xl">Welkom terug, {username}!</CardTitle>
           <div className="flex gap-1 sm:gap-2">
-            {hasAnyData && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleResetStats}
-                disabled={resetting}
-                className="text-xs sm:text-sm px-2 sm:px-3 bg-transparent"
-              >
-                <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                <span className="hidden sm:inline">{resetting ? "Resetten..." : "Reset Stats"}</span>
-                <span className="sm:hidden">Reset</span>
-              </Button>
-            )}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleResetStats}
+              disabled={resetting}
+              className="text-xs sm:text-sm px-2 sm:px-3 bg-transparent"
+            >
+              <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+              <span className="hidden sm:inline">{resetting ? "Resetten..." : "Reset Stats"}</span>
+              <span className="sm:hidden">Reset</span>
+            </Button>
             <Button variant="outline" size="sm" onClick={() => signOut()} className="text-xs sm:text-sm px-2 sm:px-3">
               <LogOut className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               <span className="hidden sm:inline">Uitloggen</span>

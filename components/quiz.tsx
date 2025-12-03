@@ -24,6 +24,7 @@ import { useAuth } from "@/contexts/auth-context"
 
 interface QuizProps {
   onQuizComplete?: () => void
+  onQuizStateChange?: (isActive: boolean) => void
 }
 
 function shuffleArray<T>(array: T[]): T[] {
@@ -92,7 +93,7 @@ function getQuestionsByIds(questionIds: string[]): Question[] {
   return questionSets.flatMap((set) => set.questions.filter((q) => questionIds.includes(q.id)))
 }
 
-export default function Quiz({ onQuizComplete }: QuizProps) {
+export default function Quiz({ onQuizComplete, onQuizStateChange }: QuizProps) {
   const { username, isAnonymous } = useAuth()
 
   const [selectedSet, setSelectedSet] = useState<QuestionSet | null>(null)
@@ -113,6 +114,12 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   const [resumeSetId, setResumeSetId] = useState<string | null>(null)
   const [savedProgress, setSavedProgress] = useState<QuizProgress | null>(null)
 
+  useEffect(() => {
+    if (onQuizStateChange) {
+      onQuizStateChange(quizStarted)
+    }
+  }, [quizStarted, onQuizStateChange])
+
   const handleCancelResume = () => {
     setShowResumeDialog(false)
     setResumeSetId(null)
@@ -120,8 +127,11 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   const handleBackToSets = () => {
-    setQuizStarted(false)
     setSelectedSet(null)
+    setQuizStarted(false)
+    setShowResult(false)
+    setSavedProgress(null)
+    onQuizStateChange?.(false)
   }
 
   const loadSeriesAttempts = async () => {
@@ -262,13 +272,14 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
 
   const handleStartQuiz = () => {
     if (!selectedSet) return
-
-    const processedQuestions = shuffleQuestionsIfNeeded(selectedSet.questions)
+    const convertedQuestions = convertQuestions(selectedSet.questions)
+    const shuffledQuestions = isShuffleQuestions ? shuffleArray(convertedQuestions) : convertedQuestions
+    const processedQuestions = isShuffleAnswers
+      ? shuffledQuestions.map((q) => ({ ...q, options: shuffleArray([...q.options]) }))
+      : shuffledQuestions
     setQuestions(processedQuestions)
     setQuizStarted(true)
-    setShowResult(false)
-    setCurrentQuestion(0)
-    setAnswers([])
+    onQuizStateChange?.(true)
   }
 
   const shuffleQuestionsIfNeeded = (questions: any[]): any[] => {
@@ -359,12 +370,16 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   const handleContinueToNextSet = () => {
-    if (isWrongAnswersMode) return
-
-    const currentSetIndex = questionSets.findIndex((set: QuestionSet) => set.id === selectedSet?.id)
+    if (!selectedSet) return
+    const currentSetIndex = questionSets.findIndex((set: QuestionSet) => set.id === selectedSet.id)
     if (currentSetIndex !== -1 && currentSetIndex < questionSets.length - 1) {
       const nextSet = questionSets[currentSetIndex + 1]
-      handleSelectSet(nextSet)
+      setSelectedSet(nextSet)
+      setQuizStarted(false)
+      setShowResult(false)
+      setAnswers([])
+      setCurrentQuestion(0)
+      onQuizStateChange?.(false)
     }
   }
 
@@ -405,18 +420,15 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   }
 
   const handleStopQuiz = async () => {
-    if (username && !isAnonymous) {
-      if (!isWrongAnswersMode) {
-        await saveProgress()
-      }
-      // Reload wrong answers after stopping to reflect any changes made
-      await loadWrongAnswers()
-      await loadAllSeriesProgress()
+    if (answers.some((a) => a !== "")) {
+      await saveProgress()
     }
+    setSelectedSet(null)
     setQuizStarted(false)
     setShowResult(false)
-    setSelectedSet(null)
-    setIsWrongAnswersMode(false)
+    setAnswers([])
+    setCurrentQuestion(0)
+    onQuizStateChange?.(false)
   }
 
   if (showResumeDialog && savedProgress) {

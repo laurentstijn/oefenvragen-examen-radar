@@ -12,7 +12,8 @@ export default function Page() {
   const { username, loading, isAnonymous, signOut } = useAuth()
   const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0)
   const [quizKey, setQuizKey] = useState(0)
-  const showAdminButton = false // Change to true to show admin button
+  const [isQuizActive, setIsQuizActive] = useState(false) // Added state to track if quiz is active
+  const showAdminButton = false
 
   const handleQuizComplete = () => {
     setStatsRefreshTrigger((prev) => prev + 1)
@@ -21,6 +22,10 @@ export default function Page() {
   const handleDataReset = () => {
     setStatsRefreshTrigger((prev) => prev + 1)
     setQuizKey((prev) => prev + 1)
+  }
+
+  const handleQuizStateChange = (isActive: boolean) => {
+    setIsQuizActive(isActive)
   }
 
   return (
@@ -76,8 +81,10 @@ export default function Page() {
                 </Button>
               </div>
             )}
-            {!isAnonymous && <UserStatsPanel refreshTrigger={statsRefreshTrigger} onDataReset={handleDataReset} />}
-            <Quiz key={quizKey} onQuizComplete={handleQuizComplete} />
+            {!isAnonymous && !isQuizActive && (
+              <UserStatsPanel refreshTrigger={statsRefreshTrigger} onDataReset={handleDataReset} />
+            )}
+            <Quiz key={quizKey} onQuizComplete={handleQuizComplete} onQuizStateChange={handleQuizStateChange} />
           </>
         )}
       </div>
