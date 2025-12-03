@@ -573,9 +573,10 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   if (showResult) {
     const score = answers.filter((answer, idx) => answer === questions[idx].correctAnswer).length
     const percentage = Math.round((score / questions.length) * 100)
-    const hasNextSet = selectedSet
-      ? questionSets.findIndex((set: QuestionSet) => set.id === selectedSet.id) < questionSets.length - 1
-      : false
+    const hasNextSet =
+      !isWrongAnswersMode && selectedSet
+        ? questionSets.findIndex((set: QuestionSet) => set.id === selectedSet.id) < questionSets.length - 1
+        : false
 
     return (
       <Card className="border-2">
