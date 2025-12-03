@@ -22,7 +22,7 @@ export default function Page() {
   }
 
   return (
-    <main className="w-full bg-background relative">
+    <main className="w-full min-h-screen bg-background relative">
       <div className="absolute inset-0 pointer-events-none opacity-[1] hidden md:block">
         <div className="absolute top-[60%] left-[40%] -translate-x-1/2 -translate-y-1/2">
           <div className="w-[800px] h-[800px] rounded-full border-2 border-lime-400/60"></div>
