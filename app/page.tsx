@@ -12,6 +12,7 @@ export default function Page() {
   const { username, loading, isAnonymous, signOut } = useAuth()
   const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0)
   const [quizKey, setQuizKey] = useState(0)
+  const showAdminButton = false // Change to true to show admin button
 
   const handleQuizComplete = () => {
     setStatsRefreshTrigger((prev) => prev + 1)
@@ -49,7 +50,7 @@ export default function Page() {
       <div className="w-full max-w-4xl mx-auto px-3 py-3 relative z-10">
         <div className="relative mb-3">
           <h1 className="text-lg font-bold text-foreground text-center">Oefenvragen Examen Radar</h1>
-          {username && (
+          {username && showAdminButton && (
             <Link href="/admin" className="absolute right-0 top-0">
               <Button variant="outline" size="sm" className="gap-2 bg-transparent">
                 <Settings className="w-4 h-4" />

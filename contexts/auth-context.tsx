@@ -44,9 +44,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const exists = await checkUsernameExists(username)
 
-      if (!exists) {
-        await createUser(username)
+      if (exists) {
+        throw new Error("Deze gebruikersnaam is al in gebruik. Kies een andere naam.")
       }
+
+      await createUser(username)
 
       localStorage.setItem("quiz_username", username)
       localStorage.removeItem("quiz_anonymous")

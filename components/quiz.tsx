@@ -555,14 +555,14 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
             </div>
           </div>
         </CardContent>
-        <CardFooter className="flex gap-3 sm:gap-4 pt-4">
-          <Button onClick={handleBackToSets} variant="outline" className="w-full sm:w-auto bg-transparent">
+        <CardFooter className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+          <Button onClick={handleBackToSets} variant="outline" className="w-full sm:w-auto bg-transparent sm:order-1">
             <ChevronLeft className="w-4 h-4 mr-2" />
             Terug
           </Button>
-          <Button onClick={handleStartQuiz} className="w-full sm:flex-1" size="lg">
+          <Button onClick={handleStartQuiz} className="w-full sm:flex-1 sm:order-2" size="lg">
             {(isShuffleQuestions || isShuffleAnswers) && <Shuffle className="w-4 h-4 mr-2" />}
-            Start Quiz
+            Start Reeks
           </Button>
         </CardFooter>
       </Card>
