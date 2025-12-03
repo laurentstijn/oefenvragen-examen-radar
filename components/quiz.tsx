@@ -377,14 +377,14 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
             </p>
           </div>
         </CardContent>
-        <CardFooter className="flex gap-2">
-          <Button onClick={handleCancelResume} variant="outline" className="flex-1 bg-transparent" size="lg">
+        <CardFooter className="flex flex-col md:flex-row gap-2">
+          <Button onClick={handleCancelResume} variant="outline" className="w-full md:flex-1 bg-transparent" size="lg">
             Terug
           </Button>
-          <Button onClick={handleStartFresh} variant="outline" className="flex-1 bg-transparent" size="lg">
+          <Button onClick={handleStartFresh} variant="outline" className="w-full md:flex-1 bg-transparent" size="lg">
             Opnieuw Beginnen
           </Button>
-          <Button onClick={handleResumeProgress} className="flex-1" size="lg">
+          <Button onClick={handleResumeProgress} className="w-full md:flex-1" size="lg">
             Doorgaan
           </Button>
         </CardFooter>
