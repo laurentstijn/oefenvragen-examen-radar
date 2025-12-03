@@ -37,6 +37,10 @@ interface QuizProps {
 }
 
 function shuffleArray<T>(array: T[]): T[] {
+  if (!array || !Array.isArray(array)) {
+    console.error("[v0] shuffleArray received invalid array:", array)
+    return []
+  }
   const newArray = [...array]
   for (let i = newArray.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1))
@@ -46,20 +50,27 @@ function shuffleArray<T>(array: T[]): T[] {
 }
 
 function convertQuestions(questions: Question[]): QuizQuestion[] {
-  return questions.map((q) => ({
-    ...q,
-    options: [
-      { label: "a", text: q.options.a },
-      { label: "b", text: q.options.b },
-      { label: "c", text: q.options.c },
-    ],
-    correctAnswer: q.correct,
-    correctAnswerText: q.options[q.correct],
-  }))
+  return questions
+    .filter((q) => q && q.options && q.options.a && q.options.b && q.options.c)
+    .map((q) => ({
+      ...q,
+      options: [
+        { label: "a", text: q.options.a },
+        { label: "b", text: q.options.b },
+        { label: "c", text: q.options.c },
+      ],
+      correctAnswer: q.correct,
+      correctAnswerText: q.options[q.correct],
+    }))
 }
 
 function shuffleAnswers(questions: QuizQuestion[]): QuizQuestion[] {
   return questions.map((q) => {
+    if (!q.options || !Array.isArray(q.options)) {
+      console.error("[v0] Question missing options array:", q)
+      return q
+    }
+
     const texts = q.options.map((opt) => opt.text)
     const shuffledTexts = shuffleArray(texts)
 
@@ -248,6 +259,12 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   const handleNext = () => {
     if (!selectedAnswer) {
       alert("Selecteer eerst een antwoord")
+      return
+    }
+
+    if (!answers || !Array.isArray(answers)) {
+      console.error("[v0] answers is not an array:", answers)
+      setAnswers([])
       return
     }
 
