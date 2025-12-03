@@ -352,8 +352,8 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
   const handleContinueToNextSet = () => {
     if (isWrongAnswersMode) return
 
-    const currentSetIndex = questionSets.findIndex((set: QuestionSet) => set.id === completedSetId)
-    if (currentSetIndex < questionSets.length - 1) {
+    const currentSetIndex = questionSets.findIndex((set: QuestionSet) => set.id === selectedSet?.id)
+    if (currentSetIndex !== -1 && currentSetIndex < questionSets.length - 1) {
       const nextSet = questionSets[currentSetIndex + 1]
       handleSelectSet(nextSet)
     }
