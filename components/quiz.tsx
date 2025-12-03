@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
@@ -20,7 +20,7 @@ import {
   getIncorrectQuestions,
   type QuizProgress,
 } from "@/lib/firebase-service"
-import { useAuth } from "@/contexts/auth-context" // Import useAuth hook
+import { useAuth } from "@/contexts/auth-context"
 
 interface QuizProps {
   onQuizComplete?: () => void
@@ -93,7 +93,7 @@ function getQuestionsByIds(questionIds: string[]): Question[] {
 }
 
 export default function Quiz({ onQuizComplete }: QuizProps) {
-  const { username, isAnonymous } = useAuth() // Use the imported useAuth hook
+  const { username, isAnonymous } = useAuth()
 
   const [selectedSet, setSelectedSet] = useState<QuestionSet | null>(null)
   const [isWrongAnswersMode, setIsWrongAnswersMode] = useState(false)
@@ -412,15 +412,16 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
 
   if (showResumeDialog && savedProgress) {
     const progress = savedProgress
+    const totalQuestions = selectedSet?.questions.length || progress.answers?.length || 0
     return (
       <Card className="border-2 mx-auto mt-4 sm:mt-8">
         <CardHeader className="text-center pb-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs sm:text-sm font-medium text-muted-foreground">
-              Vraag {progress.currentQuestion + 1} van {progress.answers?.length || 0}
+              Vraag {progress.currentQuestion + 1} van {totalQuestions}
             </span>
           </div>
-          <Progress value={(progress.currentQuestion + 1) / (progress.answers?.length || 1)} className="w-full" />
+          <Progress value={((progress.currentQuestion + 1) / totalQuestions) * 100} className="w-full" />
           <h3 className="text-base sm:text-lg lg:text-xl leading-relaxed mt-4">{progress.setName}</h3>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -429,8 +430,8 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
               <span className="font-medium">Reeks:</span> {progress.setName}
             </p>
             <p className="text-xs sm:text-sm">
-              <span className="font-medium">Voortgang:</span> {progress.answers?.length || 0} van{" "}
-              {progress.answers?.length || 0} vragen beantwoord
+              <span className="font-medium">Voortgang:</span> {progress.currentQuestion + 1} van {totalQuestions} vragen
+              beantwoord
             </p>
             <p className="text-xs sm:text-sm text-muted-foreground">
               Laatst opgeslagen: {new Date(progress.timestamp).toLocaleString("nl-NL")}
@@ -522,7 +523,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
     return (
       <Card className="border-2">
         <CardHeader className="text-center pb-4">
-          <h3 className="text-base sm:text-lg lg:text-xl leading-relaxed">{selectedSetDetails.name}</h3>
+          <CardTitle className="text-center text-lg sm:text-xl">{selectedSetDetails.name}</CardTitle>
           <p className="text-sm sm:text-base lg:text-lg mt-2">
             {selectedSetDetails.description} - {selectedSetDetails.questions.length} meerkeuzevragen
           </p>
@@ -530,24 +531,24 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
         <CardContent className="space-y-6">
           <div className="space-y-3">
             <div className="flex items-center space-x-2 p-4 rounded-lg bg-muted/50">
-              <RadioGroup defaultValue="off" className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value="on"
-                  checked={isShuffleQuestions}
-                  onCheckedChange={() => setIsShuffleQuestions(true)}
-                />
+              <RadioGroup
+                value={isShuffleQuestions ? "on" : "off"}
+                onValueChange={(value) => setIsShuffleQuestions(value === "on")}
+                className="flex items-center space-x-2"
+              >
+                <RadioGroupItem value="on" id="shuffle-questions" />
                 <Label htmlFor="shuffle-questions" className="text-sm sm:text-base font-medium leading-none">
                   Shuffle vragen (willekeurige volgorde van vragen)
                 </Label>
               </RadioGroup>
             </div>
             <div className="flex items-center space-x-2 p-4 rounded-lg bg-muted/50">
-              <RadioGroup defaultValue="off" className="flex items-center space-x-2">
-                <RadioGroupItem
-                  value="on"
-                  checked={isShuffleAnswers}
-                  onCheckedChange={() => setIsShuffleAnswers(true)}
-                />
+              <RadioGroup
+                value={isShuffleAnswers ? "on" : "off"}
+                onValueChange={(value) => setIsShuffleAnswers(value === "on")}
+                className="flex items-center space-x-2"
+              >
+                <RadioGroupItem value="on" id="shuffle-answers" />
                 <Label htmlFor="shuffle-answers" className="text-sm sm:text-base font-medium leading-none">
                   Shuffle antwoorden (willekeurige volgorde van a, b, c)
                 </Label>
@@ -684,7 +685,7 @@ export default function Quiz({ onQuizComplete }: QuizProps) {
             Vraag {currentQuestion + 1} van {questions.length}
           </span>
         </div>
-        <Progress value={(currentQuestion + 1) / questions.length} className="w-full" />
+        <Progress value={((currentQuestion + 1) / questions.length) * 100} className="w-full" />
         <h3 className="text-base sm:text-lg lg:text-xl leading-relaxed mt-4">{questions[currentQuestion].question}</h3>
         {questions[currentQuestion].image ? (
           <div className="mt-3 sm:mt-4 p-3 sm:p-4 bg-muted rounded-lg border">

@@ -246,7 +246,7 @@ export const questionSets: QuestionSet[] = [
         "We peilen een tegenligger tegenover onze koersflits. Welke van onderstaande redeneringen is fout?",
         "Hoe groter de peilingshoek, hoe groter de dwarse afstand",
         "Hoe kleiner de peilingshoek, hoe kleiner de dwarse afstand",
-        "De peilingshoek geeft geen sluitende indicatie met betrekking bot de dwarse afstand tussen beide schepen",
+        "De peilingshoek geeft geen sluitende indicatie met betrekking tot de dwarse afstand tussen beide schepen",
         "c",
       ),
       q(
@@ -1809,7 +1809,7 @@ export const questionSets: QuestionSet[] = [
         "Gelijk aan 10.000 MHz",
         "Tussen de 30 en 10.000 MHz",
         "Gelijk aan 30 MHz",
-        "c",
+        "a",
       ),
       q(
         231,
