@@ -123,11 +123,10 @@
     @apply bg-background text-foreground;
   }
 
-  /* Ensuring proper full-height layout with natural scrolling for iframe */
+  /* Removed height: 100% from html/body to fix double scrollbar issue */
   html,
   body {
     width: 100%;
-    height: 100%;
     margin: 0;
     padding: 0;
   }
