@@ -379,6 +379,7 @@ export default function Quiz({ onQuizComplete, onQuizStateChange }: QuizProps) {
       setShowResult(false)
       setAnswers([])
       setCurrentQuestion(0)
+      setSelectedAnswer(null) // Reset selected answer when moving to next set
       onQuizStateChange?.(false)
     }
   }
